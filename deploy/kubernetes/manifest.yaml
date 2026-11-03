@@ -1,0 +1,79 @@
+# Sample code, provided as is under the MIT License. Not an AtScale product. See DISCLAIMER.md.
+# AtScale aggregate lifecycle exporter without an own image: a pinned Python image runs exporter.py from a
+# ConfigMap. See README "Install on Kubernetes without building an image" for the steps. Adjust namespace,
+# instances and the ServiceMonitor label to your cluster.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atscale-aggregates-exporter
+  namespace: monitoring
+  labels: {app: atscale-aggregates-exporter}
+spec:
+  replicas: 1                      # never more: two replicas log every event twice
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app: atscale-aggregates-exporter}
+  template:
+    metadata:
+      labels: {app: atscale-aggregates-exporter}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: aggregates-exporter
+          image: python:3.12.16-slim@sha256:962f801b08c870ac2a51b72bf02dae38c9a4162319e5e882ec244e198188d54e
+          command: ["python3", "-I", "/app/exporter.py"]
+          env:
+            - {name: ATSCALE_INSTANCES, value: "prod=https://atscale.example.com"}
+            - {name: POLL_SECONDS, value: "120"}
+            - {name: PYTHONUNBUFFERED, value: "1"}
+          envFrom:
+            - secretRef: {name: atscale-aggregates-exporter}     # ATSCALE_TOKEN_<NAME> per instance
+          ports:
+            - {name: metrics, containerPort: 9102}
+          readinessProbe:
+            httpGet: {path: /healthz, port: metrics}
+            periodSeconds: 30
+          livenessProbe:
+            httpGet: {path: /healthz, port: metrics}
+            periodSeconds: 60
+          resources:
+            requests: {cpu: 10m, memory: 64Mi}
+            limits: {cpu: 200m, memory: 192Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: app, mountPath: /app, readOnly: true}
+      volumes:
+        - name: app
+          configMap: {name: atscale-aggregates-exporter}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: atscale-aggregates-exporter
+  namespace: monitoring
+  labels: {app: atscale-aggregates-exporter}
+spec:
+  selector: {app: atscale-aggregates-exporter}
+  ports:
+    - {name: metrics, port: 9102, targetPort: metrics}
+---
+# Needs the Prometheus Operator. Set the label to match your Prometheus serviceMonitorSelector.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: atscale-aggregates-exporter
+  namespace: monitoring
+  labels: {release: kube-prometheus-stack}
+spec:
+  selector:
+    matchLabels: {app: atscale-aggregates-exporter}
+  endpoints:
+    - port: metrics
+      interval: 30s

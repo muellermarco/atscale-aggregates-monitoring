@@ -1,0 +1,7 @@
+# Sample code, provided as is under the MIT License. Not an AtScale product. See DISCLAIMER.md.
+apiVersion: v2
+name: atscale-aggregates-monitoring
+description: Prometheus exporter and Grafana dashboard for the AtScale aggregate lifecycle (sample code, unsupported)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

@@ -1,0 +1,8 @@
+AtScale aggregate lifecycle exporter (sample code, provided as is, not supported by AtScale).
+
+Check that it polls:
+  kubectl logs -n {{ .Release.Namespace }} deploy/{{ include "aam.fullname" . }}
+Expected: "<instance>: warm-up, N active aggregates recorded without events", then
+"<instance>: N active aggregates, M events" every {{ .Values.pollSeconds }} s.
+
+Metrics: http://{{ include "aam.fullname" . }}.{{ .Release.Namespace }}.svc:9102/metrics

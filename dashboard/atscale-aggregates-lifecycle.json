@@ -1,0 +1,3734 @@
+{
+  "title": "AtScale aggregates: lifecycle",
+  "uid": "atscale-aggregates-lifecycle",
+  "description": "When AtScale created, rebuilt and deactivated aggregates, why, and how many each catalog and model has.",
+  "tags": [
+    "atscale",
+    "aggregates"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "refresh": "5m",
+  "editable": true,
+  "graphTooltip": 1,
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "label": "Prometheus",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {},
+        "hide": 0
+      },
+      {
+        "name": "loki",
+        "label": "Loki",
+        "type": "datasource",
+        "query": "loki",
+        "current": {},
+        "hide": 0
+      },
+      {
+        "name": "env",
+        "label": "Instance",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "query": {
+          "query": "label_values(atscale_aggregates, env)",
+          "refId": "env"
+        },
+        "definition": "label_values(atscale_aggregates, env)",
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "sort": 1,
+        "hide": 0
+      },
+      {
+        "name": "catalog",
+        "label": "Catalog",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "query": {
+          "query": "label_values(atscale_aggregates{env=~\"$env\"}, catalog)",
+          "refId": "catalog"
+        },
+        "definition": "label_values(atscale_aggregates{env=~\"$env\"}, catalog)",
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "sort": 1,
+        "hide": 0
+      },
+      {
+        "name": "model",
+        "label": "Model",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "query": {
+          "query": "label_values(atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\"}, model)",
+          "refId": "model"
+        },
+        "definition": "label_values(atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\"}, model)",
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "sort": 1,
+        "hide": 0
+      },
+      {
+        "name": "enginedb",
+        "label": "Engine database",
+        "type": "datasource",
+        "query": "grafana-postgresql-datasource",
+        "current": {},
+        "hide": 0,
+        "description": "PostgreSQL data source on the AtScale database of one instance, for the prediction reports. Pick the instance you look at."
+      },
+      {
+        "name": "routine",
+        "label": "Routine codes",
+        "type": "custom",
+        "query": "hide,show",
+        "current": {
+          "text": "hide",
+          "value": "hide"
+        },
+        "options": [],
+        "hide": 0
+      },
+      {
+        "name": "catalog_id",
+        "label": "Catalog ID",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "query": {
+          "query": "label_values(atscale_model_info{env=~\"$env\",catalog=~\"$catalog\"}, catalog_id)",
+          "refId": "catalog_id"
+        },
+        "definition": "label_values(atscale_model_info{env=~\"$env\",catalog=~\"$catalog\"}, catalog_id)",
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": null,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "sort": 1,
+        "hide": 2
+      },
+      {
+        "name": "model_id",
+        "label": "Model ID",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "query": {
+          "query": "label_values(atscale_model_info{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"}, model_id)",
+          "refId": "model_id"
+        },
+        "definition": "label_values(atscale_model_info{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"}, model_id)",
+        "refresh": 2,
+        "multi": true,
+        "includeAll": true,
+        "allValue": null,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "sort": 1,
+        "hide": 2
+      },
+      {
+        "name": "event_selector",
+        "label": "Exporter log",
+        "type": "textbox",
+        "query": "{container=\"aggregates-exporter\"}",
+        "current": {
+          "text": "{container=\"aggregates-exporter\"}",
+          "value": "{container=\"aggregates-exporter\"}"
+        },
+        "hide": 2
+      },
+      {
+        "name": "engine_selector",
+        "label": "Engine log",
+        "type": "textbox",
+        "query": "{container=\"engine\"}",
+        "current": {
+          "text": "{container=\"engine\"}",
+          "value": "{container=\"engine\"}"
+        },
+        "hide": 2
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      },
+      {
+        "name": "Batch builds",
+        "enable": true,
+        "iconColor": "purple",
+        "datasource": {
+          "type": "loki",
+          "uid": "${loki}"
+        },
+        "expr": "$engine_selector |= \"Aggregate Batch - Creating Batch\"",
+        "titleFormat": "Aggregate batch build",
+        "textFormat": "{{__line__}}"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "Aggregates now",
+      "id": 1,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Active aggregates",
+      "id": 2,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Aggregates that AtScale can use for queries now (latest poll of the aggregates API).",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "A",
+          "legendFormat": "",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Rows in aggregate tables",
+      "id": 3,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Rows in all active aggregate tables.",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(atscale_aggregate_rows_total{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "A",
+          "legendFormat": "",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Not used by any query yet",
+      "id": 4,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Active aggregates whose query count (AtScale queryUtilization) is 0. AtScale deactivates aggregates that stay unused for the configured number of days (setting aggregates.maintenance.zeroUtilizationTTL, default 45).",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(atscale_aggregates_unused{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "A",
+          "legendFormat": "",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Models with aggregates",
+      "id": 5,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Models that have at least one active aggregate.",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "count(count by (env, catalog, model) (atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"}))",
+          "refId": "A",
+          "legendFormat": "",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "User-defined aggregates",
+      "id": 6,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Aggregates defined in the model (SML) or created by a user. AtScale creates all other aggregates itself.",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 1
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\",type=\"user_defined\"})",
+          "refId": "A",
+          "legendFormat": "",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Exporter up",
+      "id": 7,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "1 = the last poll of every selected AtScale instance succeeded. Always shows the last 5 minutes.",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "min(atscale_aggregates_exporter_up{env=~\"$env\"})",
+          "refId": "A",
+          "legendFormat": "",
+          "format": "time_series",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "timeFrom": "5m"
+    },
+    {
+      "type": "row",
+      "title": "Aggregates per catalog and model",
+      "id": 8,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Active aggregates per catalog and model",
+      "id": 9,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Demand: created because a user query had no matching aggregate. Predicted: created from the query history. User-defined: defined in the model (SML) or created by a user. Not used yet: no query has used the aggregate.",
+      "gridPos": {
+        "h": 11,
+        "w": 14,
+        "x": 0,
+        "y": 6
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (env, catalog, model) (atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "A",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (env, catalog, model) (atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\",subtype=\"demand_defined\"})",
+          "refId": "B",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (env, catalog, model) (atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\",subtype=\"prediction_defined\"})",
+          "refId": "C",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (env, catalog, model) (atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\",type=\"user_defined\"})",
+          "refId": "D",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (env, catalog, model) (atscale_aggregates_unused{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "E",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (env, catalog, model) (atscale_aggregate_rows_total{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "F",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {
+              "env": 0,
+              "catalog": 1,
+              "model": 2,
+              "Value #A": 3,
+              "Value #B": 4,
+              "Value #C": 5,
+              "Value #D": 6,
+              "Value #E": 7,
+              "Value #F": 8
+            },
+            "renameByName": {
+              "env": "Instance",
+              "catalog": "Catalog",
+              "model": "Model",
+              "Value #A": "Total",
+              "Value #B": "Demand",
+              "Value #C": "Predicted",
+              "Value #D": "User-defined",
+              "Value #E": "Not used yet",
+              "Value #F": "Rows"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Total",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "basic",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5794F2"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Rows"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Instance"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Catalog"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 230
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Model"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 200
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "barchart",
+      "title": "Aggregates per catalog and why they exist",
+      "id": 10,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Active aggregates per instance and catalog, split by subtype (why AtScale created them). The table on the left splits them by model.",
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 14,
+        "y": 6
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "label_join(sum by (env, catalog, subtype) (atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"}), \"catalog_in_env\", \" / \", \"env\", \"catalog\")",
+          "refId": "A",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "transformations": [
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "columnField": "subtype",
+            "rowField": "catalog_in_env",
+            "valueField": "Value"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "catalog_in_env\\\\subtype",
+            "renamePattern": "Catalog"
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "demand_defined",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "stacking": "normal",
+        "showValue": "never",
+        "barWidth": 0.8,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "noValue": "0",
+          "custom": {
+            "fillOpacity": 85
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "demand_defined"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "prediction_defined"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "hinted"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "manual"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "yellow"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Active aggregates over time",
+      "id": 11,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Number of active aggregates per model, as the exporter saw it on each poll.",
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (env, catalog, model) (atscale_aggregates{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "A",
+          "legendFormat": "{{env}} {{catalog}} / {{model}}",
+          "format": "time_series"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 0
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Rows in aggregate tables over time",
+      "id": 12,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Rows in all active aggregate tables per model.",
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum by (env, catalog, model) (atscale_aggregate_rows_total{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "A",
+          "legendFormat": "{{env}} {{catalog}} / {{model}}",
+          "format": "time_series"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 0
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "row",
+      "title": "Lifecycle events and reasons (exporter)",
+      "id": 13,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Created",
+      "id": 14,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "Aggregates that became active for the first time in the selected range.",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 27
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum(count_over_time($event_selector |= \"atscale_aggregate\" | json | env=~\"$env\" | catalog=~\"$catalog\" | model=~\"$model\" | action=\"created\" [$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Rebuilt",
+      "id": 15,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "Aggregates that got a new active instance (a new table) in the selected range.",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 27
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum(count_over_time($event_selector |= \"atscale_aggregate\" | json | env=~\"$env\" | catalog=~\"$catalog\" | model=~\"$model\" | action=\"rebuilt\" [$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Deactivated",
+      "id": 16,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "Aggregates that AtScale stopped using in the selected range. AtScale drops the table later (setting aggregates.invalid.removalAge, default 2 days).",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 27
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum(count_over_time($event_selector |= \"atscale_aggregate\" | json | env=~\"$env\" | catalog=~\"$catalog\" | model=~\"$model\" | action=\"deactivated\" [$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Events over time",
+      "id": 17,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "Lifecycle events per 10 minutes (or wider on long ranges), from the exporter's event log. A bar appears when its interval has ended.",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 27
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum by (action) (count_over_time($event_selector |= \"atscale_aggregate\" | json | env=~\"$env\" | catalog=~\"$catalog\" | model=~\"$model\" [$__interval]))",
+          "refId": "A",
+          "legendFormat": "{{action}}",
+          "queryType": "range"
+        }
+      ],
+      "interval": "10m",
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "created"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "rebuilt"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "deactivated"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "Why created",
+      "id": 18,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "query_demand: a user query had no matching aggregate. prediction: predicted from the query history. user_defined_in_model: defined in the model (SML). user_defined_manual: created by a user.",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 0,
+        "y": 31
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum by (reason) (count_over_time($event_selector |= \"atscale_aggregate\" | json | env=~\"$env\" | catalog=~\"$catalog\" | model=~\"$model\" | action=\"created\" [$__range]))",
+          "refId": "A",
+          "legendFormat": "{{reason}}",
+          "queryType": "instant"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {
+              "reason": 0
+            },
+            "renameByName": {
+              "reason": "Reason",
+              "Value #A": "Count"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Count",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Count"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "Why rebuilt",
+      "id": 19,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "scheduled_batch: a build schedule ran shortly before. on_demand_batch: a batch build started by the API, the UI or a trigger file. query_demand: built again outside a batch because a query needed it. full or incremental: from the aggregate definition. AtScale stores no trigger, so the exporter derives it.",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 4,
+        "y": 31
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum by (reason) (count_over_time($event_selector |= \"atscale_aggregate\" | json | env=~\"$env\" | catalog=~\"$catalog\" | model=~\"$model\" | action=\"rebuilt\" [$__range]))",
+          "refId": "A",
+          "legendFormat": "{{reason}}",
+          "queryType": "instant"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {
+              "reason": 0
+            },
+            "renameByName": {
+              "reason": "Reason",
+              "Value #A": "Count"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Count",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Count"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "Why deactivated",
+      "id": 20,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "Classified from AtScale's status message of the last instance. unused: not used for the configured number of days. replaced_by_rebuild: a batch build replaced it. model_changed: the model no longer matches the aggregate. removed_by_user: deleted in the UI or API. deleted_no_reason_logged: AtScale deleted it without an earlier status that names a reason.",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 8,
+        "y": 31
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum by (reason) (count_over_time($event_selector |= \"atscale_aggregate\" | json | env=~\"$env\" | catalog=~\"$catalog\" | model=~\"$model\" | action=\"deactivated\" [$__range]))",
+          "refId": "A",
+          "legendFormat": "{{reason}}",
+          "queryType": "instant"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {
+              "reason": 0
+            },
+            "renameByName": {
+              "reason": "Reason",
+              "Value #A": "Count"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Count",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Count"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "Event log",
+      "id": 21,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "One row per lifecycle event. Time is when AtScale created or built the aggregate; for deactivations it is when the exporter saw the change. Click an aggregate ID to see its full history in the engine log.",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "$event_selector |= \"atscale_aggregate\" | json | env=~\"$env\" | catalog=~\"$catalog\" | model=~\"$model\"",
+          "refId": "A",
+          "legendFormat": "",
+          "queryType": "range"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "Line",
+            "format": "json",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              {
+                "targetField": "time",
+                "destinationType": "time"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "includeByName": {
+              "time": true,
+              "action": true,
+              "reason": true,
+              "env": true,
+              "catalog": true,
+              "model": true,
+              "aggregate": true,
+              "subtype": true,
+              "rows": true,
+              "build_ms": true,
+              "message": true,
+              "aggregate_id": true,
+              "build_query_id": true
+            },
+            "indexByName": {
+              "time": 0,
+              "action": 1,
+              "reason": 2,
+              "env": 3,
+              "catalog": 4,
+              "model": 5,
+              "aggregate": 6,
+              "subtype": 7,
+              "rows": 8,
+              "build_ms": 9,
+              "message": 10,
+              "aggregate_id": 11,
+              "build_query_id": 12
+            },
+            "renameByName": {
+              "time": "Time",
+              "action": "Event",
+              "reason": "Reason",
+              "env": "Instance",
+              "catalog": "Catalog",
+              "model": "Model",
+              "aggregate": "Aggregate",
+              "subtype": "Subtype",
+              "rows": "Rows",
+              "build_ms": "Build time",
+              "message": "AtScale message",
+              "aggregate_id": "Aggregate ID",
+              "build_query_id": "Build query ID"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Event"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "created": {
+                        "color": "green",
+                        "index": 0
+                      },
+                      "rebuilt": {
+                        "color": "blue",
+                        "index": 1
+                      },
+                      "deactivated": {
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Build time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "ms"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Event"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Aggregate ID"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "History of this aggregate in the engine log",
+                    "url": "/explore?schemaVersion=1&panes={\"a\":{%22datasource%22:%22${loki}%22,%22queries%22:[{%22refId%22:%22A%22,%22expr%22:%22$engine_selector |= \\%22${__value.raw}\\%22%22,%22datasource%22:{%22type%22:%22loki%22,%22uid%22:%22${loki}%22}}],%22range%22:{%22from%22:%22now-30d%22,%22to%22:%22now%22}}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "row",
+      "title": "Status history from the engine log (also before the exporter ran)",
+      "id": 22,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 49
+      },
+      "panels": []
+    },
+    {
+      "type": "text",
+      "title": "",
+      "id": 23,
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 50
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "AtScale writes one engine log line for each status change of an aggregate instance: `new` \u2192 `inprogress` (build) \u2192 `done` \u2192 `active`, and later `invalid` (deactivated, with the reason) \u2192 `deleted` (table dropped). These panels read those lines, so they show the history as far back as the log store keeps it. The catalog and model names come from the exporter; IDs that the exporter does not know stay as IDs."
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Status changes over time",
+      "id": 24,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "Instance status changes per 10 minutes (or wider on long ranges), from the engine log. A bar appears when its interval has ended. active = an aggregate became usable (new or rebuilt). invalid = deactivated. deleted = table dropped.",
+      "gridPos": {
+        "h": 9,
+        "w": 14,
+        "x": 0,
+        "y": 52
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum by (status) (count_over_time($engine_selector |= \"status changed to\" | regexp `Aggregate instance (?P<instance_id>[0-9a-f-]{36}) status changed to \"(?P<status>\\w+)\"\\.\\s*(?P<message>.*?)\\s*\\(aggDefId=(?P<aggregate_id>[0-9a-f-]{36})\\)` | regexp `projectId=(?P<catalog_id>[0-9a-f-]{36})` | regexp `cubeId=(?P<model_id>[0-9a-f-]{36})` [$__interval]))",
+          "refId": "A",
+          "legendFormat": "{{status}}",
+          "queryType": "range"
+        }
+      ],
+      "interval": "10m",
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "active"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "inprogress"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "done"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "invalid"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "deleted"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "dark-red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pending"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "yellow"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "Why deactivated or failed (engine log)",
+      "id": 25,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "The status message of every change to invalid (deactivated) or failed (build failed), as the engine logged it. This is the reason. A table drop (deleted) without an earlier invalid line has no logged reason.",
+      "gridPos": {
+        "h": 9,
+        "w": 10,
+        "x": 14,
+        "y": 52
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "sum by (status, message) (count_over_time($engine_selector |= \"status changed to\" | regexp `Aggregate instance (?P<instance_id>[0-9a-f-]{36}) status changed to \"(?P<status>\\w+)\"\\.\\s*(?P<message>.*?)\\s*\\(aggDefId=(?P<aggregate_id>[0-9a-f-]{36})\\)` | regexp `projectId=(?P<catalog_id>[0-9a-f-]{36})` | regexp `cubeId=(?P<model_id>[0-9a-f-]{36})` | status=~\"invalid|failed\" | label_format message=`{{ if .message }}{{ regexReplaceAll \"[0-9a-f-]{36}\" .message \"<id>\" }}{{ else }}-{{ end }}` [$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "queryType": "instant"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {
+              "status": 0,
+              "message": 1
+            },
+            "renameByName": {
+              "status": "Status",
+              "message": "Reason (AtScale message)",
+              "Value #A": "Count"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Count",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Count"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "active": {
+                        "color": "green",
+                        "index": 0
+                      },
+                      "inprogress": {
+                        "color": "blue",
+                        "index": 1
+                      },
+                      "done": {
+                        "color": "light-blue",
+                        "index": 2
+                      },
+                      "invalid": {
+                        "color": "orange",
+                        "index": 3
+                      },
+                      "deleted": {
+                        "color": "red",
+                        "index": 4
+                      },
+                      "failed": {
+                        "color": "dark-red",
+                        "index": 5
+                      },
+                      "pending": {
+                        "color": "yellow",
+                        "index": 6
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "Status changes",
+      "id": 26,
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "Every status change of an aggregate instance. Message is the reason AtScale gives (empty for build steps). Filter a column with the funnel icon, or click an aggregate ID for its full history.",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 61
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "$engine_selector |= \"status changed to\" | regexp `Aggregate instance (?P<instance_id>[0-9a-f-]{36}) status changed to \"(?P<status>\\w+)\"\\.\\s*(?P<message>.*?)\\s*\\(aggDefId=(?P<aggregate_id>[0-9a-f-]{36})\\)` | regexp `projectId=(?P<catalog_id>[0-9a-f-]{36})` | regexp `cubeId=(?P<model_id>[0-9a-f-]{36})` | label_format message=`{{ if .message }}{{ regexReplaceAll \"[0-9a-f-]{36}\" .message \"\u2026\" }}{{ else }}-{{ end }}` | label_format key=`{{ if .model_id }}{{ .model_id }}{{ else }}{{ .catalog_id }}{{ end }}`",
+          "refId": "A",
+          "legendFormat": "",
+          "queryType": "range"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "label_replace(max by (model_id, catalog, model) (atscale_model_info{env=~\"$env\"}), \"key\", \"$1\", \"model_id\", \"(.*)\") or label_replace(label_replace(max by (catalog_id, catalog) (atscale_model_info{env=~\"$env\"}), \"key\", \"$1\", \"catalog_id\", \"(.*)\"), \"model\", \"(not in the log line)\", \"\", \"\")",
+          "refId": "B",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "key",
+            "mode": "outerTabular"
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "type": "exclude",
+            "match": "any",
+            "filters": [
+              {
+                "fieldName": "Line",
+                "config": {
+                  "id": "isNull",
+                  "options": {}
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "includeByName": {
+              "Time 1": true,
+              "status": true,
+              "message": true,
+              "catalog": true,
+              "model": true,
+              "aggregate_id": true,
+              "instance_id": true,
+              "key": true
+            },
+            "indexByName": {
+              "Time 1": 0,
+              "status": 1,
+              "message": 2,
+              "catalog": 3,
+              "model": 4,
+              "aggregate_id": 5,
+              "instance_id": 6,
+              "key": 7
+            },
+            "renameByName": {
+              "status": "Status",
+              "message": "Message",
+              "catalog": "Catalog",
+              "model": "Model",
+              "aggregate_id": "Aggregate ID",
+              "instance_id": "Instance ID",
+              "Time 1": "Time"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "active": {
+                        "color": "green",
+                        "index": 0
+                      },
+                      "inprogress": {
+                        "color": "blue",
+                        "index": 1
+                      },
+                      "done": {
+                        "color": "light-blue",
+                        "index": 2
+                      },
+                      "invalid": {
+                        "color": "orange",
+                        "index": 3
+                      },
+                      "deleted": {
+                        "color": "red",
+                        "index": 4
+                      },
+                      "failed": {
+                        "color": "dark-red",
+                        "index": 5
+                      },
+                      "pending": {
+                        "color": "yellow",
+                        "index": 6
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "key"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Aggregate ID"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "History of this aggregate",
+                    "url": "/explore?schemaVersion=1&panes={\"a\":{%22datasource%22:%22${loki}%22,%22queries%22:[{%22refId%22:%22A%22,%22expr%22:%22$engine_selector |= \\%22${__value.raw}\\%22%22,%22datasource%22:{%22type%22:%22loki%22,%22uid%22:%22${loki}%22}}],%22range%22:{%22from%22:%22now-30d%22,%22to%22:%22now%22}}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "Why created: the query that asked for each new aggregate",
+      "id": 27,
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki}"
+      },
+      "description": "AtScale approves an aggregate candidate while it plans a user query that had no matching aggregate. Query ID is that query. Selection lists the attributes (dimension, key, measure) the aggregate holds. incidental = true: AtScale added the candidate while it planned another candidate.",
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 71
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki}"
+          },
+          "expr": "$engine_selector |= \"is approved\" |= \"Candidate\" | regexp `queryId=(?P<query_id>[0-9a-f-]{36})` | regexp `Candidate (?P<aggregate_id>[0-9a-f-]{36}) is approved \\(incidental=(?P<incidental>\\w+).*?selection=(?P<selection>.*)\\)$` | label_format selection=`{{ regexReplaceAll \"AggregateDefinitionAttribute\\\\(([^,]*),(\\\\w+),(?:Some\\\\(\\\\w+\\\\)|None),\\\\w+\\\\)\" .selection \"$1 ($2)\" }}`",
+          "refId": "A",
+          "legendFormat": "",
+          "queryType": "range"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "source": "labels",
+            "replace": false,
+            "keepTime": false
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "includeByName": {
+              "Time": true,
+              "aggregate_id": true,
+              "query_id": true,
+              "incidental": true,
+              "selection": true
+            },
+            "indexByName": {
+              "Time": 0,
+              "aggregate_id": 1,
+              "query_id": 2,
+              "incidental": 3,
+              "selection": 4
+            },
+            "renameByName": {
+              "aggregate_id": "Aggregate ID",
+              "query_id": "Query ID",
+              "incidental": "Incidental",
+              "selection": "Attributes in the aggregate"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Aggregate ID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 290
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Query ID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 290
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Incidental"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Query ID"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Engine log of this query",
+                    "url": "/explore?schemaVersion=1&panes={\"a\":{%22datasource%22:%22${loki}%22,%22queries%22:[{%22refId%22:%22A%22,%22expr%22:%22$engine_selector |= \\%22${__value.raw}\\%22%22,%22datasource%22:{%22type%22:%22loki%22,%22uid%22:%22${loki}%22}}],%22range%22:{%22from%22:%22now-30d%22,%22to%22:%22now%22}}}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Aggregate ID"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "History of this aggregate",
+                    "url": "/explore?schemaVersion=1&panes={\"a\":{%22datasource%22:%22${loki}%22,%22queries%22:[{%22refId%22:%22A%22,%22expr%22:%22$engine_selector |= \\%22${__value.raw}\\%22%22,%22datasource%22:{%22type%22:%22loki%22,%22uid%22:%22${loki}%22}}],%22range%22:{%22from%22:%22now-30d%22,%22to%22:%22now%22}}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "row",
+      "title": "Why AtScale did not propose or rejected an aggregate (engine database)",
+      "id": 28,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 80
+      },
+      "panels": []
+    },
+    {
+      "type": "text",
+      "title": "",
+      "id": 29,
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 81
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "AtScale runs prediction rules for each part of a user query that no aggregate answers. A **G** code means the rule proposed no aggregate. An **R** code means AtScale proposed a candidate and then rejected it. AtScale stores these decisions in its database; select the instance's database in **Engine database** at the top. Routine codes (G260, G270, G300, and G250 for preferred store copies) only say that a path does not apply. They appear on almost every query, so they are hidden unless **Routine codes** is set to show."
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Query parts predicted",
+      "id": 30,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${enginedb}"
+      },
+      "description": "Query parts that went through aggregate prediction in the selected range.",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 84
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${enginedb}"
+          },
+          "refId": "A",
+          "rawSql": "select count(*) from engine.queries q join engine.aggregate_prediction_reports r on r.query_id = q.query_id left join engine.queries_planned qp on qp.query_id = q.query_id where r.report_type = 'approved' and $__timeFilter(q.received) and ('${catalog:regex}' = '.*' or qp.project_id::text ~ '^(${catalog_id:regex})$') and ('${model:regex}' = '.*' or qp.cube_id::text ~ '^(${model_id:regex})$')",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "With an aggregate proposed",
+      "id": 31,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${enginedb}"
+      },
+      "description": "Query parts for which at least one candidate passed all rules. AtScale then builds it.",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 84
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${enginedb}"
+          },
+          "refId": "A",
+          "rawSql": "select count(*) from engine.queries q join engine.aggregate_prediction_reports r on r.query_id = q.query_id left join engine.queries_planned qp on qp.query_id = q.query_id where r.report_type = 'approved' and $__timeFilter(q.received) and ('${catalog:regex}' = '.*' or qp.project_id::text ~ '^(${catalog_id:regex})$') and ('${model:regex}' = '.*' or qp.cube_id::text ~ '^(${model_id:regex})$') and json_array_length(r.content->'approvedCandidates') > 0",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Not proposed (G)",
+      "id": 32,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${enginedb}"
+      },
+      "description": "Query parts with at least one G code, without routine codes unless they are shown.",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 84
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${enginedb}"
+          },
+          "refId": "A",
+          "rawSql": "with d as (select q.received as time, q.query_id::text as query_id, q.query_language as language, coalesce(qp.cube_name, '-') as model, r.query_part as part, r.content->>'code' as code, r.content->>'reason' as reason, r.content->>'candidateId' as candidate_id, (select string_agg((s->>'settingName') || ' = ' || (s->>'value'), ', ') from json_array_elements(r.content->'applicableSettings') s) as settings from engine.queries q join engine.aggregate_prediction_reports r on r.query_id = q.query_id left join engine.queries_planned qp on qp.query_id = q.query_id where r.report_type = 'rule' and r.content->>'code' ~ '^[GR][0-9]{3}$' and $__timeFilter(q.received) and ('${catalog:regex}' = '.*' or qp.project_id::text ~ '^(${catalog_id:regex})$') and ('${model:regex}' = '.*' or qp.cube_id::text ~ '^(${model_id:regex})$')), m(code, meaning) as (values ('G010', 'Dataset does not allow system aggregates'), ('G020', 'Measures come from more than one dataset'), ('G030', 'Only dimensional measures, with unrelated dimensions'), ('G040', 'Dimensional aggregates are off'), ('G050', 'Query construction not supported for aggregates'), ('G060', 'A dataset in the query does not allow aggregates'), ('G070', 'Dimensional aggregate would need narrowing, which is off'), ('G080', 'Dimension-only query: keys from different datasets'), ('G090', 'Dimension-only query: hierarchies differ'), ('G100', 'Dimension-only query: attribute not reachable from all keys'), ('G110', 'Dimension-only query: several hierarchies, or attribute excluded from aggregates'), ('G120', 'Key excluded from dimensional aggregates'), ('G130', 'Table with the attribute values already exists'), ('G140', 'Table with the key values already exists'), ('G150', 'Table with the attribute values already exists'), ('G160', 'Table with the key values already exists'), ('G170', 'Measures come from different fact tables'), ('G190', 'Existing aggregate has the same dimensionality'), ('G200', 'Existing aggregate has the same dimensionality and all measures'), ('G210', 'Query construction not supported for aggregates'), ('G220', 'Aggregate basis could not be built for this query part'), ('G230', 'Exact distinct count or distinct sum, not allowed in aggregates'), ('G240', 'No compatible HLL or quantile sketches on the warehouse'), ('G250', 'Measures from several datasets, or no preferred store copy'), ('G260', 'Not a multi-source query (deprecated path)'), ('G270', 'No promotion to the preferred store'), ('G280', 'Query has a dimensional modification without its own aggregate'), ('G290', 'Aggregates for dimensional modifications are off'), ('G300', 'No calculated members in the query'), ('G310', 'Dataset is an aggregate in the preferred store'), ('R010', 'Filter on a non-additive measure not in the GROUP BY'), ('R020', 'Identical aggregate already exists'), ('R030', 'Narrower aggregate does not compress enough'), ('R040', 'Row security (dynamic constraint) in the selection'), ('R045', 'Source table has a warehouse row or masking policy'), ('R050', 'Compression score below threshold, or no statistics'), ('R051', 'Compression score with slowly changing dimension below threshold'), ('R060', 'Attribute excluded from dimensional aggregates'), ('R070', 'Preferred store copy above the per-table row limit'), ('R080', 'No target warehouse connection for the aggregate'), ('R090', 'Attribute excluded from fact aggregates'), ('R110', 'Dataset does not allow the preferred store'), ('R120', 'Preferred store copy: row count unknown or above the limit'), ('R130', 'Quantile measures without sketch support'), ('R140', 'Distinct count estimate measures without sketch support'), ('R150', 'Preferred store total row limit reached'), ('R160', 'Calculation type not allowed for a dimensional modification aggregate'), ('R170', 'Dimensional modification aggregate above the complexity limit'), ('R180', 'ParallelPeriod inside a range'), ('R190', 'Decimal without precision for the preferred store')), dm as (select d.*, coalesce(m.meaning, '') as meaning, regexp_replace(regexp_replace(regexp_replace(d.reason, '^Not nominating [a-z ]+: ', ''), '[0-9a-f]{8}-[0-9a-f-]{27}', '\u2026', 'g'), '[0-9]+\\.[0-9]+(E-?[0-9]+)?', 'n', 'g') as reason_group, (d.code in ('G260', 'G270', 'G300') or (d.code = 'G250' and d.reason like 'Not nominating a promoted%')) as routine from d left join m using (code)) select count(distinct (query_id, part)) from dm where code like 'G%' and ('$routine' = 'show' or not routine)",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Candidates rejected (R)",
+      "id": 33,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${enginedb}"
+      },
+      "description": "Candidates that a rejecting rule removed.",
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 84
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${enginedb}"
+          },
+          "refId": "A",
+          "rawSql": "with d as (select q.received as time, q.query_id::text as query_id, q.query_language as language, coalesce(qp.cube_name, '-') as model, r.query_part as part, r.content->>'code' as code, r.content->>'reason' as reason, r.content->>'candidateId' as candidate_id, (select string_agg((s->>'settingName') || ' = ' || (s->>'value'), ', ') from json_array_elements(r.content->'applicableSettings') s) as settings from engine.queries q join engine.aggregate_prediction_reports r on r.query_id = q.query_id left join engine.queries_planned qp on qp.query_id = q.query_id where r.report_type = 'rule' and r.content->>'code' ~ '^[GR][0-9]{3}$' and $__timeFilter(q.received) and ('${catalog:regex}' = '.*' or qp.project_id::text ~ '^(${catalog_id:regex})$') and ('${model:regex}' = '.*' or qp.cube_id::text ~ '^(${model_id:regex})$')), m(code, meaning) as (values ('G010', 'Dataset does not allow system aggregates'), ('G020', 'Measures come from more than one dataset'), ('G030', 'Only dimensional measures, with unrelated dimensions'), ('G040', 'Dimensional aggregates are off'), ('G050', 'Query construction not supported for aggregates'), ('G060', 'A dataset in the query does not allow aggregates'), ('G070', 'Dimensional aggregate would need narrowing, which is off'), ('G080', 'Dimension-only query: keys from different datasets'), ('G090', 'Dimension-only query: hierarchies differ'), ('G100', 'Dimension-only query: attribute not reachable from all keys'), ('G110', 'Dimension-only query: several hierarchies, or attribute excluded from aggregates'), ('G120', 'Key excluded from dimensional aggregates'), ('G130', 'Table with the attribute values already exists'), ('G140', 'Table with the key values already exists'), ('G150', 'Table with the attribute values already exists'), ('G160', 'Table with the key values already exists'), ('G170', 'Measures come from different fact tables'), ('G190', 'Existing aggregate has the same dimensionality'), ('G200', 'Existing aggregate has the same dimensionality and all measures'), ('G210', 'Query construction not supported for aggregates'), ('G220', 'Aggregate basis could not be built for this query part'), ('G230', 'Exact distinct count or distinct sum, not allowed in aggregates'), ('G240', 'No compatible HLL or quantile sketches on the warehouse'), ('G250', 'Measures from several datasets, or no preferred store copy'), ('G260', 'Not a multi-source query (deprecated path)'), ('G270', 'No promotion to the preferred store'), ('G280', 'Query has a dimensional modification without its own aggregate'), ('G290', 'Aggregates for dimensional modifications are off'), ('G300', 'No calculated members in the query'), ('G310', 'Dataset is an aggregate in the preferred store'), ('R010', 'Filter on a non-additive measure not in the GROUP BY'), ('R020', 'Identical aggregate already exists'), ('R030', 'Narrower aggregate does not compress enough'), ('R040', 'Row security (dynamic constraint) in the selection'), ('R045', 'Source table has a warehouse row or masking policy'), ('R050', 'Compression score below threshold, or no statistics'), ('R051', 'Compression score with slowly changing dimension below threshold'), ('R060', 'Attribute excluded from dimensional aggregates'), ('R070', 'Preferred store copy above the per-table row limit'), ('R080', 'No target warehouse connection for the aggregate'), ('R090', 'Attribute excluded from fact aggregates'), ('R110', 'Dataset does not allow the preferred store'), ('R120', 'Preferred store copy: row count unknown or above the limit'), ('R130', 'Quantile measures without sketch support'), ('R140', 'Distinct count estimate measures without sketch support'), ('R150', 'Preferred store total row limit reached'), ('R160', 'Calculation type not allowed for a dimensional modification aggregate'), ('R170', 'Dimensional modification aggregate above the complexity limit'), ('R180', 'ParallelPeriod inside a range'), ('R190', 'Decimal without precision for the preferred store')), dm as (select d.*, coalesce(m.meaning, '') as meaning, regexp_replace(regexp_replace(regexp_replace(d.reason, '^Not nominating [a-z ]+: ', ''), '[0-9a-f]{8}-[0-9a-f-]{27}', '\u2026', 'g'), '[0-9]+\\.[0-9]+(E-?[0-9]+)?', 'n', 'g') as reason_group, (d.code in ('G260', 'G270', 'G300') or (d.code = 'G250' and d.reason like 'Not nominating a promoted%')) as routine from d left join m using (code)) select count(distinct candidate_id) from dm where code like 'R%'",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false,
+          "fields": ""
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "locale",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Decisions over time",
+      "id": 34,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${enginedb}"
+      },
+      "description": "G and R decisions per 10 minutes (or wider on long ranges), by code.",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 88
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${enginedb}"
+          },
+          "refId": "A",
+          "rawSql": "with d as (select q.received as time, q.query_id::text as query_id, q.query_language as language, coalesce(qp.cube_name, '-') as model, r.query_part as part, r.content->>'code' as code, r.content->>'reason' as reason, r.content->>'candidateId' as candidate_id, (select string_agg((s->>'settingName') || ' = ' || (s->>'value'), ', ') from json_array_elements(r.content->'applicableSettings') s) as settings from engine.queries q join engine.aggregate_prediction_reports r on r.query_id = q.query_id left join engine.queries_planned qp on qp.query_id = q.query_id where r.report_type = 'rule' and r.content->>'code' ~ '^[GR][0-9]{3}$' and $__timeFilter(q.received) and ('${catalog:regex}' = '.*' or qp.project_id::text ~ '^(${catalog_id:regex})$') and ('${model:regex}' = '.*' or qp.cube_id::text ~ '^(${model_id:regex})$')), m(code, meaning) as (values ('G010', 'Dataset does not allow system aggregates'), ('G020', 'Measures come from more than one dataset'), ('G030', 'Only dimensional measures, with unrelated dimensions'), ('G040', 'Dimensional aggregates are off'), ('G050', 'Query construction not supported for aggregates'), ('G060', 'A dataset in the query does not allow aggregates'), ('G070', 'Dimensional aggregate would need narrowing, which is off'), ('G080', 'Dimension-only query: keys from different datasets'), ('G090', 'Dimension-only query: hierarchies differ'), ('G100', 'Dimension-only query: attribute not reachable from all keys'), ('G110', 'Dimension-only query: several hierarchies, or attribute excluded from aggregates'), ('G120', 'Key excluded from dimensional aggregates'), ('G130', 'Table with the attribute values already exists'), ('G140', 'Table with the key values already exists'), ('G150', 'Table with the attribute values already exists'), ('G160', 'Table with the key values already exists'), ('G170', 'Measures come from different fact tables'), ('G190', 'Existing aggregate has the same dimensionality'), ('G200', 'Existing aggregate has the same dimensionality and all measures'), ('G210', 'Query construction not supported for aggregates'), ('G220', 'Aggregate basis could not be built for this query part'), ('G230', 'Exact distinct count or distinct sum, not allowed in aggregates'), ('G240', 'No compatible HLL or quantile sketches on the warehouse'), ('G250', 'Measures from several datasets, or no preferred store copy'), ('G260', 'Not a multi-source query (deprecated path)'), ('G270', 'No promotion to the preferred store'), ('G280', 'Query has a dimensional modification without its own aggregate'), ('G290', 'Aggregates for dimensional modifications are off'), ('G300', 'No calculated members in the query'), ('G310', 'Dataset is an aggregate in the preferred store'), ('R010', 'Filter on a non-additive measure not in the GROUP BY'), ('R020', 'Identical aggregate already exists'), ('R030', 'Narrower aggregate does not compress enough'), ('R040', 'Row security (dynamic constraint) in the selection'), ('R045', 'Source table has a warehouse row or masking policy'), ('R050', 'Compression score below threshold, or no statistics'), ('R051', 'Compression score with slowly changing dimension below threshold'), ('R060', 'Attribute excluded from dimensional aggregates'), ('R070', 'Preferred store copy above the per-table row limit'), ('R080', 'No target warehouse connection for the aggregate'), ('R090', 'Attribute excluded from fact aggregates'), ('R110', 'Dataset does not allow the preferred store'), ('R120', 'Preferred store copy: row count unknown or above the limit'), ('R130', 'Quantile measures without sketch support'), ('R140', 'Distinct count estimate measures without sketch support'), ('R150', 'Preferred store total row limit reached'), ('R160', 'Calculation type not allowed for a dimensional modification aggregate'), ('R170', 'Dimensional modification aggregate above the complexity limit'), ('R180', 'ParallelPeriod inside a range'), ('R190', 'Decimal without precision for the preferred store')), dm as (select d.*, coalesce(m.meaning, '') as meaning, regexp_replace(regexp_replace(regexp_replace(d.reason, '^Not nominating [a-z ]+: ', ''), '[0-9a-f]{8}-[0-9a-f-]{27}', '\u2026', 'g'), '[0-9]+\\.[0-9]+(E-?[0-9]+)?', 'n', 'g') as reason_group, (d.code in ('G260', 'G270', 'G300') or (d.code = 'G250' and d.reason like 'Not nominating a promoted%')) as routine from d left join m using (code)) select $__timeGroupAlias(time, $__interval), code as metric, count(*) as value from dm where ('$routine' = 'show' or not routine) group by 1, 2 order by 1",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "interval": "10m",
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            }
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "table",
+      "title": "Why no aggregate was proposed (G)",
+      "id": 35,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${enginedb}"
+      },
+      "description": "Each G reason with how often it occurred. Reason: AtScale's text, with IDs replaced by \u2026 and decimals by n. Settings: the AtScale settings that decided it, with their value.",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 96
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${enginedb}"
+          },
+          "refId": "A",
+          "rawSql": "with d as (select q.received as time, q.query_id::text as query_id, q.query_language as language, coalesce(qp.cube_name, '-') as model, r.query_part as part, r.content->>'code' as code, r.content->>'reason' as reason, r.content->>'candidateId' as candidate_id, (select string_agg((s->>'settingName') || ' = ' || (s->>'value'), ', ') from json_array_elements(r.content->'applicableSettings') s) as settings from engine.queries q join engine.aggregate_prediction_reports r on r.query_id = q.query_id left join engine.queries_planned qp on qp.query_id = q.query_id where r.report_type = 'rule' and r.content->>'code' ~ '^[GR][0-9]{3}$' and $__timeFilter(q.received) and ('${catalog:regex}' = '.*' or qp.project_id::text ~ '^(${catalog_id:regex})$') and ('${model:regex}' = '.*' or qp.cube_id::text ~ '^(${model_id:regex})$')), m(code, meaning) as (values ('G010', 'Dataset does not allow system aggregates'), ('G020', 'Measures come from more than one dataset'), ('G030', 'Only dimensional measures, with unrelated dimensions'), ('G040', 'Dimensional aggregates are off'), ('G050', 'Query construction not supported for aggregates'), ('G060', 'A dataset in the query does not allow aggregates'), ('G070', 'Dimensional aggregate would need narrowing, which is off'), ('G080', 'Dimension-only query: keys from different datasets'), ('G090', 'Dimension-only query: hierarchies differ'), ('G100', 'Dimension-only query: attribute not reachable from all keys'), ('G110', 'Dimension-only query: several hierarchies, or attribute excluded from aggregates'), ('G120', 'Key excluded from dimensional aggregates'), ('G130', 'Table with the attribute values already exists'), ('G140', 'Table with the key values already exists'), ('G150', 'Table with the attribute values already exists'), ('G160', 'Table with the key values already exists'), ('G170', 'Measures come from different fact tables'), ('G190', 'Existing aggregate has the same dimensionality'), ('G200', 'Existing aggregate has the same dimensionality and all measures'), ('G210', 'Query construction not supported for aggregates'), ('G220', 'Aggregate basis could not be built for this query part'), ('G230', 'Exact distinct count or distinct sum, not allowed in aggregates'), ('G240', 'No compatible HLL or quantile sketches on the warehouse'), ('G250', 'Measures from several datasets, or no preferred store copy'), ('G260', 'Not a multi-source query (deprecated path)'), ('G270', 'No promotion to the preferred store'), ('G280', 'Query has a dimensional modification without its own aggregate'), ('G290', 'Aggregates for dimensional modifications are off'), ('G300', 'No calculated members in the query'), ('G310', 'Dataset is an aggregate in the preferred store'), ('R010', 'Filter on a non-additive measure not in the GROUP BY'), ('R020', 'Identical aggregate already exists'), ('R030', 'Narrower aggregate does not compress enough'), ('R040', 'Row security (dynamic constraint) in the selection'), ('R045', 'Source table has a warehouse row or masking policy'), ('R050', 'Compression score below threshold, or no statistics'), ('R051', 'Compression score with slowly changing dimension below threshold'), ('R060', 'Attribute excluded from dimensional aggregates'), ('R070', 'Preferred store copy above the per-table row limit'), ('R080', 'No target warehouse connection for the aggregate'), ('R090', 'Attribute excluded from fact aggregates'), ('R110', 'Dataset does not allow the preferred store'), ('R120', 'Preferred store copy: row count unknown or above the limit'), ('R130', 'Quantile measures without sketch support'), ('R140', 'Distinct count estimate measures without sketch support'), ('R150', 'Preferred store total row limit reached'), ('R160', 'Calculation type not allowed for a dimensional modification aggregate'), ('R170', 'Dimensional modification aggregate above the complexity limit'), ('R180', 'ParallelPeriod inside a range'), ('R190', 'Decimal without precision for the preferred store')), dm as (select d.*, coalesce(m.meaning, '') as meaning, regexp_replace(regexp_replace(regexp_replace(d.reason, '^Not nominating [a-z ]+: ', ''), '[0-9a-f]{8}-[0-9a-f-]{27}', '\u2026', 'g'), '[0-9]+\\.[0-9]+(E-?[0-9]+)?', 'n', 'g') as reason_group, (d.code in ('G260', 'G270', 'G300') or (d.code = 'G250' and d.reason like 'Not nominating a promoted%')) as routine from d left join m using (code)) select code as \"Code\", meaning as \"Meaning\", reason_group as \"Reason\", settings as \"Settings\", count(*) as \"Count\", max(time) as \"Last seen\" from dm where code like 'G%' and ('$routine' = 'show' or not routine) group by 1, 2, 3, 4 order by 5 desc limit 200",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "transformations": [],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Count",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Code"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Meaning"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 330
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Settings"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 240
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Count"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 95
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last seen"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "Why a candidate was rejected (R)",
+      "id": 36,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${enginedb}"
+      },
+      "description": "Each R reason with how often it occurred. R050 and R030 compare the compression score (fact rows / aggregate rows) with aggregates.create.compression.threshold.",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 104
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${enginedb}"
+          },
+          "refId": "A",
+          "rawSql": "with d as (select q.received as time, q.query_id::text as query_id, q.query_language as language, coalesce(qp.cube_name, '-') as model, r.query_part as part, r.content->>'code' as code, r.content->>'reason' as reason, r.content->>'candidateId' as candidate_id, (select string_agg((s->>'settingName') || ' = ' || (s->>'value'), ', ') from json_array_elements(r.content->'applicableSettings') s) as settings from engine.queries q join engine.aggregate_prediction_reports r on r.query_id = q.query_id left join engine.queries_planned qp on qp.query_id = q.query_id where r.report_type = 'rule' and r.content->>'code' ~ '^[GR][0-9]{3}$' and $__timeFilter(q.received) and ('${catalog:regex}' = '.*' or qp.project_id::text ~ '^(${catalog_id:regex})$') and ('${model:regex}' = '.*' or qp.cube_id::text ~ '^(${model_id:regex})$')), m(code, meaning) as (values ('G010', 'Dataset does not allow system aggregates'), ('G020', 'Measures come from more than one dataset'), ('G030', 'Only dimensional measures, with unrelated dimensions'), ('G040', 'Dimensional aggregates are off'), ('G050', 'Query construction not supported for aggregates'), ('G060', 'A dataset in the query does not allow aggregates'), ('G070', 'Dimensional aggregate would need narrowing, which is off'), ('G080', 'Dimension-only query: keys from different datasets'), ('G090', 'Dimension-only query: hierarchies differ'), ('G100', 'Dimension-only query: attribute not reachable from all keys'), ('G110', 'Dimension-only query: several hierarchies, or attribute excluded from aggregates'), ('G120', 'Key excluded from dimensional aggregates'), ('G130', 'Table with the attribute values already exists'), ('G140', 'Table with the key values already exists'), ('G150', 'Table with the attribute values already exists'), ('G160', 'Table with the key values already exists'), ('G170', 'Measures come from different fact tables'), ('G190', 'Existing aggregate has the same dimensionality'), ('G200', 'Existing aggregate has the same dimensionality and all measures'), ('G210', 'Query construction not supported for aggregates'), ('G220', 'Aggregate basis could not be built for this query part'), ('G230', 'Exact distinct count or distinct sum, not allowed in aggregates'), ('G240', 'No compatible HLL or quantile sketches on the warehouse'), ('G250', 'Measures from several datasets, or no preferred store copy'), ('G260', 'Not a multi-source query (deprecated path)'), ('G270', 'No promotion to the preferred store'), ('G280', 'Query has a dimensional modification without its own aggregate'), ('G290', 'Aggregates for dimensional modifications are off'), ('G300', 'No calculated members in the query'), ('G310', 'Dataset is an aggregate in the preferred store'), ('R010', 'Filter on a non-additive measure not in the GROUP BY'), ('R020', 'Identical aggregate already exists'), ('R030', 'Narrower aggregate does not compress enough'), ('R040', 'Row security (dynamic constraint) in the selection'), ('R045', 'Source table has a warehouse row or masking policy'), ('R050', 'Compression score below threshold, or no statistics'), ('R051', 'Compression score with slowly changing dimension below threshold'), ('R060', 'Attribute excluded from dimensional aggregates'), ('R070', 'Preferred store copy above the per-table row limit'), ('R080', 'No target warehouse connection for the aggregate'), ('R090', 'Attribute excluded from fact aggregates'), ('R110', 'Dataset does not allow the preferred store'), ('R120', 'Preferred store copy: row count unknown or above the limit'), ('R130', 'Quantile measures without sketch support'), ('R140', 'Distinct count estimate measures without sketch support'), ('R150', 'Preferred store total row limit reached'), ('R160', 'Calculation type not allowed for a dimensional modification aggregate'), ('R170', 'Dimensional modification aggregate above the complexity limit'), ('R180', 'ParallelPeriod inside a range'), ('R190', 'Decimal without precision for the preferred store')), dm as (select d.*, coalesce(m.meaning, '') as meaning, regexp_replace(regexp_replace(regexp_replace(d.reason, '^Not nominating [a-z ]+: ', ''), '[0-9a-f]{8}-[0-9a-f-]{27}', '\u2026', 'g'), '[0-9]+\\.[0-9]+(E-?[0-9]+)?', 'n', 'g') as reason_group, (d.code in ('G260', 'G270', 'G300') or (d.code = 'G250' and d.reason like 'Not nominating a promoted%')) as routine from d left join m using (code)) select code as \"Code\", meaning as \"Meaning\", reason_group as \"Reason\", settings as \"Settings\", count(*) as \"Count\", max(time) as \"Last seen\" from dm where code like 'R%' and ('$routine' = 'show' or not routine) group by 1, 2, 3, 4 order by 5 desc limit 200",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "transformations": [],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Count",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Code"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Meaning"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 330
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Settings"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 240
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Count"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 95
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last seen"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "title": "Prediction decisions per query",
+      "id": 37,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${enginedb}"
+      },
+      "description": "The latest 1,000 decisions. Click a query ID for the engine log of that query. A candidate that passed all rules becomes an aggregate with the same ID.",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 112
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${enginedb}"
+          },
+          "refId": "A",
+          "rawSql": "with d as (select q.received as time, q.query_id::text as query_id, q.query_language as language, coalesce(qp.cube_name, '-') as model, r.query_part as part, r.content->>'code' as code, r.content->>'reason' as reason, r.content->>'candidateId' as candidate_id, (select string_agg((s->>'settingName') || ' = ' || (s->>'value'), ', ') from json_array_elements(r.content->'applicableSettings') s) as settings from engine.queries q join engine.aggregate_prediction_reports r on r.query_id = q.query_id left join engine.queries_planned qp on qp.query_id = q.query_id where r.report_type = 'rule' and r.content->>'code' ~ '^[GR][0-9]{3}$' and $__timeFilter(q.received) and ('${catalog:regex}' = '.*' or qp.project_id::text ~ '^(${catalog_id:regex})$') and ('${model:regex}' = '.*' or qp.cube_id::text ~ '^(${model_id:regex})$')), m(code, meaning) as (values ('G010', 'Dataset does not allow system aggregates'), ('G020', 'Measures come from more than one dataset'), ('G030', 'Only dimensional measures, with unrelated dimensions'), ('G040', 'Dimensional aggregates are off'), ('G050', 'Query construction not supported for aggregates'), ('G060', 'A dataset in the query does not allow aggregates'), ('G070', 'Dimensional aggregate would need narrowing, which is off'), ('G080', 'Dimension-only query: keys from different datasets'), ('G090', 'Dimension-only query: hierarchies differ'), ('G100', 'Dimension-only query: attribute not reachable from all keys'), ('G110', 'Dimension-only query: several hierarchies, or attribute excluded from aggregates'), ('G120', 'Key excluded from dimensional aggregates'), ('G130', 'Table with the attribute values already exists'), ('G140', 'Table with the key values already exists'), ('G150', 'Table with the attribute values already exists'), ('G160', 'Table with the key values already exists'), ('G170', 'Measures come from different fact tables'), ('G190', 'Existing aggregate has the same dimensionality'), ('G200', 'Existing aggregate has the same dimensionality and all measures'), ('G210', 'Query construction not supported for aggregates'), ('G220', 'Aggregate basis could not be built for this query part'), ('G230', 'Exact distinct count or distinct sum, not allowed in aggregates'), ('G240', 'No compatible HLL or quantile sketches on the warehouse'), ('G250', 'Measures from several datasets, or no preferred store copy'), ('G260', 'Not a multi-source query (deprecated path)'), ('G270', 'No promotion to the preferred store'), ('G280', 'Query has a dimensional modification without its own aggregate'), ('G290', 'Aggregates for dimensional modifications are off'), ('G300', 'No calculated members in the query'), ('G310', 'Dataset is an aggregate in the preferred store'), ('R010', 'Filter on a non-additive measure not in the GROUP BY'), ('R020', 'Identical aggregate already exists'), ('R030', 'Narrower aggregate does not compress enough'), ('R040', 'Row security (dynamic constraint) in the selection'), ('R045', 'Source table has a warehouse row or masking policy'), ('R050', 'Compression score below threshold, or no statistics'), ('R051', 'Compression score with slowly changing dimension below threshold'), ('R060', 'Attribute excluded from dimensional aggregates'), ('R070', 'Preferred store copy above the per-table row limit'), ('R080', 'No target warehouse connection for the aggregate'), ('R090', 'Attribute excluded from fact aggregates'), ('R110', 'Dataset does not allow the preferred store'), ('R120', 'Preferred store copy: row count unknown or above the limit'), ('R130', 'Quantile measures without sketch support'), ('R140', 'Distinct count estimate measures without sketch support'), ('R150', 'Preferred store total row limit reached'), ('R160', 'Calculation type not allowed for a dimensional modification aggregate'), ('R170', 'Dimensional modification aggregate above the complexity limit'), ('R180', 'ParallelPeriod inside a range'), ('R190', 'Decimal without precision for the preferred store')), dm as (select d.*, coalesce(m.meaning, '') as meaning, regexp_replace(regexp_replace(regexp_replace(d.reason, '^Not nominating [a-z ]+: ', ''), '[0-9a-f]{8}-[0-9a-f-]{27}', '\u2026', 'g'), '[0-9]+\\.[0-9]+(E-?[0-9]+)?', 'n', 'g') as reason_group, (d.code in ('G260', 'G270', 'G300') or (d.code = 'G250' and d.reason like 'Not nominating a promoted%')) as routine from d left join m using (code)) select time as \"Time\", model as \"Model\", query_id as \"Query ID\", language as \"Language\", part as \"Query part\", code as \"Code\", meaning as \"Meaning\", reason as \"Reason\", settings as \"Settings\", candidate_id as \"Candidate ID\" from dm where ('$routine' = 'show' or not routine) order by time desc limit 1000",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "transformations": [],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Model"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 160
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Query ID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 290
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Language"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Query part"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Code"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Meaning"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 260
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Settings"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 220
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Candidate ID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 290
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Query ID"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Engine log of this query",
+                    "url": "/explore?schemaVersion=1&panes={\"a\":{%22datasource%22:%22${loki}%22,%22queries%22:[{%22refId%22:%22A%22,%22expr%22:%22$engine_selector |= \\%22${__value.raw}\\%22%22,%22datasource%22:{%22type%22:%22loki%22,%22uid%22:%22${loki}%22}}],%22range%22:{%22from%22:%22now-30d%22,%22to%22:%22now%22}}}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Candidate ID"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Engine log of this candidate",
+                    "url": "/explore?schemaVersion=1&panes={\"a\":{%22datasource%22:%22${loki}%22,%22queries%22:[{%22refId%22:%22A%22,%22expr%22:%22$engine_selector |= \\%22${__value.raw}\\%22%22,%22datasource%22:{%22type%22:%22loki%22,%22uid%22:%22${loki}%22}}],%22range%22:{%22from%22:%22now-30d%22,%22to%22:%22now%22}}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "row",
+      "title": "Aggregate inventory (exporter, AGGREGATE_DETAILS=true)",
+      "id": 38,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 122
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Active aggregates",
+      "id": 39,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "One row per active aggregate. Created: when AtScale created the definition. Last build: when the build of the active table finished. Queries: how many queries used it (AtScale queryUtilization).",
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 123
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (env, catalog, model, aggregate_id, aggregate, subtype, table) (atscale_aggregate_created_timestamp_seconds{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"}) * 1000",
+          "refId": "A",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (env, catalog, model, aggregate_id, aggregate, subtype, table) (atscale_aggregate_built_timestamp_seconds{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"}) * 1000",
+          "refId": "B",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (env, catalog, model, aggregate_id, aggregate, subtype, table) (atscale_aggregate_build_duration_seconds{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "C",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (env, catalog, model, aggregate_id, aggregate, subtype, table) (atscale_aggregate_rows{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "D",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (env, catalog, model, aggregate_id, aggregate, subtype, table) (atscale_aggregate_queries{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"})",
+          "refId": "E",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (env, catalog, model, aggregate_id, aggregate, subtype, table) (atscale_aggregate_last_query_timestamp_seconds{env=~\"$env\",catalog=~\"$catalog\",model=~\"$model\"}) * 1000 > 0",
+          "refId": "F",
+          "legendFormat": "",
+          "format": "table",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "includeByName": {
+              "env": true,
+              "catalog": true,
+              "model": true,
+              "aggregate": true,
+              "subtype": true,
+              "Value #A": true,
+              "Value #B": true,
+              "Value #C": true,
+              "Value #D": true,
+              "Value #E": true,
+              "Value #F": true,
+              "table": true,
+              "aggregate_id": true
+            },
+            "indexByName": {
+              "env": 0,
+              "catalog": 1,
+              "model": 2,
+              "aggregate": 3,
+              "subtype": 4,
+              "Value #A": 5,
+              "Value #B": 6,
+              "Value #C": 7,
+              "Value #D": 8,
+              "Value #E": 9,
+              "Value #F": 10,
+              "table": 11,
+              "aggregate_id": 12
+            },
+            "renameByName": {
+              "env": "Instance",
+              "catalog": "Catalog",
+              "model": "Model",
+              "aggregate": "Aggregate",
+              "subtype": "Subtype",
+              "Value #A": "Created",
+              "Value #B": "Last build",
+              "Value #C": "Build time",
+              "Value #D": "Rows",
+              "Value #E": "Queries",
+              "Value #F": "Last used",
+              "table": "Table",
+              "aggregate_id": "Aggregate ID"
+            }
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Created",
+            "desc": true
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "filterable": true,
+            "align": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Created"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsIso"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last build"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsIso"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last used"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsIso"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Build time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Rows"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "locale"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Queries"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "locale"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Instance"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Subtype"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 140
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Created"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last build"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last used"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 170
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Aggregate ID"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "History of this aggregate",
+                    "url": "/explore?schemaVersion=1&panes={\"a\":{%22datasource%22:%22${loki}%22,%22queries%22:[{%22refId%22:%22A%22,%22expr%22:%22$engine_selector |= \\%22${__value.raw}\\%22%22,%22datasource%22:{%22type%22:%22loki%22,%22uid%22:%22${loki}%22}}],%22range%22:{%22from%22:%22now-30d%22,%22to%22:%22now%22}}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+# Sample code, provided as is under the MIT License. Not an AtScale product. See DISCLAIMER.md.
+
+image:
+  # Build the image from exporter/Dockerfile and push it to your own registry.
+  repository: ""            # required, e.g. registry.example.com/atscale-aggregates-exporter
+  tag: "0.1.0"
+  # Optional, e.g. sha256:...; when set, the image is pulled by digest and the tag is only informational.
+  digest: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+# AtScale instances to poll. name becomes the "env" label in Prometheus and Grafana.
+instances: []
+#  - name: prod
+#    url: https://atscale.example.com
+
+# Secret with one key per instance: ATSCALE_TOKEN_<NAME> (upper case, non-alphanumeric -> "_").
+# Create it yourself; this chart never stores tokens.
+existingSecret: ""          # required
+
+# Dedicated ServiceAccount for the exporter pod. It needs no Kubernetes API access; its token is not mounted.
+serviceAccount:
+  create: true
+  name: ""                  # default: the release full name
+
+# http:// instance URLs send the API token unencrypted. Allow them only for the sml-api service inside the
+# cluster (url: http://<release>-sml-api.<namespace>.svc.cluster.local:3001 with apiPrefix /v1/public).
+allowInsecureHttp: false
+
+# /v1 through the AtScale ingress gateway (public URL). /v1/public when url points at the sml-api service.
+apiPrefix: /v1
+
+# Optional extra CA certificates (PEM) for a private or self-signed AtScale certificate.
+caBundle:
+  configMap: ""
+  key: ca.crt
+
+pollSeconds: 120
+eventLog: true              # one JSON line per lifecycle event on stdout, for Loki or another log store
+aggregateDetails: true      # per-aggregate gauges (one series per active aggregate and metric)
+schedules: true             # read build schedules to tell scheduled rebuilds from on-demand ones
+
+resources:
+  requests: {cpu: 10m, memory: 64Mi}
+  limits: {cpu: 200m, memory: 192Mi}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Prometheus Operator (kube-prometheus-stack). Set labels to match your Prometheus
+# serviceMonitorSelector, e.g. {release: kube-prometheus-stack}.
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  labels: {}
+
+# Grafana sidecar dashboard ConfigMap. Match your sidecar label, often grafana_dashboard: "1".
+dashboard:
+  enabled: false
+  labels:
+    grafana_dashboard: "1"
+  # For example grafana_folder: AtScale, if your Grafana sidecar sets folderAnnotation: grafana_folder
+  annotations: {}

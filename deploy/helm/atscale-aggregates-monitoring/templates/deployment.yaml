@@ -1,0 +1,74 @@
+{{- if not .Values.image.repository }}{{ fail "set image.repository" }}{{ end }}
+{{- if not .Values.existingSecret }}{{ fail "set existingSecret" }}{{ end }}
+{{- if not .Values.instances }}{{ fail "set at least one entry in instances" }}{{ end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aam.fullname" . }}
+  labels: {{- include "aam.labels" . | nindent 4 }}
+spec:
+  replicas: 1                  # never more: two replicas log every event twice
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {{- include "aam.selector" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "aam.selector" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "aam.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: aggregates-exporter
+          image: {{ include "aam.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - {name: ATSCALE_INSTANCES, value: {{ include "aam.instances" . | quote }}}
+            - {name: API_PREFIX, value: {{ .Values.apiPrefix | quote }}}
+            - {name: POLL_SECONDS, value: {{ .Values.pollSeconds | quote }}}
+            - {name: EVENT_LOG, value: {{ .Values.eventLog | quote }}}
+            - {name: AGGREGATE_DETAILS, value: {{ .Values.aggregateDetails | quote }}}
+            - {name: SCHEDULES, value: {{ .Values.schedules | quote }}}
+            - {name: ALLOW_INSECURE_HTTP, value: {{ .Values.allowInsecureHttp | quote }}}
+            {{- if .Values.caBundle.configMap }}
+            - {name: CA_BUNDLE, value: /etc/atscale-ca/{{ .Values.caBundle.key }}}
+            {{- end }}
+          envFrom:
+            - secretRef: {name: {{ .Values.existingSecret | quote }}}
+          ports:
+            - {name: metrics, containerPort: 9102}
+          readinessProbe:
+            httpGet: {path: /healthz, port: metrics}
+            periodSeconds: 30
+          livenessProbe:
+            httpGet: {path: /healthz, port: metrics}
+            periodSeconds: 60
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          {{- if .Values.caBundle.configMap }}
+          volumeMounts:
+            - {name: ca, mountPath: /etc/atscale-ca, readOnly: true}
+          {{- end }}
+      {{- if .Values.caBundle.configMap }}
+      volumes:
+        - name: ca
+          configMap: {name: {{ .Values.caBundle.configMap | quote }}}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}

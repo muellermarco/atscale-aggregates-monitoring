@@ -1,0 +1,15 @@
+{{- if .Values.dashboard.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "aam.fullname" . }}-dashboard
+  labels:
+    {{- include "aam.labels" . | nindent 4 }}
+    {{- with .Values.dashboard.labels }}{{ toYaml . | nindent 4 }}{{ end }}
+  {{- with .Values.dashboard.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  atscale-aggregates-lifecycle.json: |-
+{{ .Files.Get "files/atscale-aggregates-lifecycle.json" | indent 4 }}
+{{- end }}

@@ -1,0 +1,7 @@
+# Add this job under scrape_configs in your prometheus.yml.
+# Replace exporter-host with the host or container name that runs the exporter.
+scrape_configs:
+  - job_name: atscale-aggregates-exporter
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["exporter-host:9102"]
